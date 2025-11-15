@@ -220,15 +220,93 @@ class CharacterCreationViewController: UIViewController {
     }
 
     @objc private func continueToGame() {
-        // Save the processed face image
-        if let image = processedFaceImage {
-            CharacterImageManager.shared.saveCharacterFace(image)
-        }
+        guard let image = processedFaceImage else { return }
 
-        // Navigate to game
+        // Show loading indicator
+        continueButton.isEnabled = false
+        retakeButton.isEnabled = false
+        instructionLabel.text = "Saving your character..."
+
+        Task {
+            do {
+                // If authenticated, save to cloud
+                if AuthenticationManager.shared.isAuthenticated {
+                    // Prompt for character name
+                    await promptForCharacterName(image: image)
+                } else {
+                    // Save locally only
+                    CharacterImageManager.shared.saveCharacterFace(image)
+                    await MainActor.run {
+                        self.navigateToGame()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.continueButton.isEnabled = true
+                    self.retakeButton.isEnabled = true
+                    self.instructionLabel.text = "Error saving character"
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func promptForCharacterName(image: UIImage) async {
+        await MainActor.run {
+            let alert = UIAlertController(
+                title: "Name Your Character",
+                message: "Give your racing character a cool name!",
+                preferredStyle: .alert
+            )
+
+            alert.addTextField { textField in
+                textField.placeholder = "Character Name"
+                textField.autocapitalizationType = .words
+            }
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                self.continueButton.isEnabled = true
+                self.retakeButton.isEnabled = true
+                self.instructionLabel.text = "Looking great! Ready to race?"
+            })
+
+            alert.addAction(UIAlertAction(title: "Save", style: .default) { _ in
+                let name = alert.textFields?.first?.text ?? "My Character"
+                self.saveCharacterToCloud(name: name, image: image)
+            })
+
+            self.present(alert, animated: true)
+        }
+    }
+
+    private func saveCharacterToCloud(name: String, image: UIImage) {
+        Task {
+            do {
+                _ = try await CharacterImageManager.shared.createCloudCharacter(name: name, image: image)
+                await MainActor.run {
+                    self.navigateToGame()
+                }
+            } catch {
+                await MainActor.run {
+                    self.continueButton.isEnabled = true
+                    self.retakeButton.isEnabled = true
+                    self.instructionLabel.text = "Error saving to cloud"
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func navigateToGame() {
         let gameVC = GameViewController()
         gameVC.modalPresentationStyle = .fullScreen
         present(gameVC, animated: true)
+    }
+
+    private func showErrorAlert(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     // MARK: - Face Detection and Processing

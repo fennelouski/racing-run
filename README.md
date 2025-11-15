@@ -19,6 +19,10 @@ Take a picture of yourself, and watch as your face magically appears on your rac
 - 🏃 **Animated Character** - Your face sits on top of a running, jumping game character
 - 💾 **Saved Progress** - Your character is saved so you can play again and again
 - 🎨 **Kid-Designed Gameplay** - Game mechanics designed by a creative 5-year-old!
+- ☁️ **Cloud Sync** - Save your characters to the cloud and access them anywhere
+- 🏆 **Global Leaderboard** - Compete with players around the world
+- 👤 **User Accounts** - Register and track your progress across devices
+- 🎯 **Score Tracking** - Submit your scores and see your rank
 
 ### 🚀 Coming Soon
 
@@ -27,9 +31,10 @@ This game is being actively developed! Here's what we're dreaming up:
 - 🏁 Racing tracks and obstacles
 - ⚡ Power-ups and special abilities
 - 🎵 Fun sound effects and music
-- 🏆 High scores and achievements
-- 👥 Multiple character slots for friends and family
-- 🎨 Customizable character bodies and costumes
+- 🏅 Daily challenges and rewards
+- 🎨 Downloadable costumes and character customization
+- 🤝 Multiplayer racing challenges
+- 📊 Detailed player statistics
 
 ---
 
@@ -37,10 +42,18 @@ This game is being actively developed! Here's what we're dreaming up:
 
 Racing Run is built using:
 
+### iOS App
 - **Swift** - Apple's modern programming language
 - **SpriteKit** - Apple's 2D game engine
 - **Vision Framework** - For advanced face detection
 - **AVFoundation** - For camera capture
+
+### Backend API
+- **Next.js** - Modern web framework deployed on Vercel
+- **TypeScript** - Type-safe backend code
+- **Vercel Postgres** - Scalable cloud database
+- **Vercel Blob** - Cloud storage for character images
+- **JWT Authentication** - Secure user sessions
 
 ### Key Components
 
@@ -110,7 +123,24 @@ This project demonstrates:
   - Good lighting
   - Face directly facing the camera
   - Clear, unobstructed view of your face
-- Your photo is stored **locally** on your device only
+- Your photo can be stored **locally only** (offline mode) or synced to the cloud (online mode)
+
+### Backend Setup (Optional - for Cloud Features)
+
+To enable cloud features like leaderboards and character sync:
+
+1. Deploy the backend to Vercel:
+   ```bash
+   cd backend
+   npm install
+   vercel --prod
+   ```
+
+2. Configure the iOS app with your API URL (see [DEPLOYMENT.md](DEPLOYMENT.md) for details)
+
+3. Or skip authentication and play offline with local-only character storage
+
+See the complete deployment guide in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
