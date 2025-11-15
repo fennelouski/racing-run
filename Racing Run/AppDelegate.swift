@@ -15,6 +15,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        // Setup the window and root view controller
+        window = UIWindow(frame: UIScreen.main.bounds)
+
+        // Check if character has been created
+        let rootViewController: UIViewController
+        if CharacterImageManager.shared.hasCharacterFace() {
+            // Show the game
+            rootViewController = GameViewController()
+        } else {
+            // Show character creation
+            rootViewController = CharacterCreationViewController()
+        }
+
+        window?.rootViewController = rootViewController
+        window?.makeKeyAndVisible()
+
         return true
     }
 
