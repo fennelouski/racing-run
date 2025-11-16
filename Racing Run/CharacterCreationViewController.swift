@@ -348,7 +348,7 @@ class CharacterCreationViewController: UIViewController {
         let rect = CGRect(
             x: boundingBox.origin.x * width,
             y: (1 - boundingBox.origin.y - boundingBox.height) * height,
-            x: boundingBox.width * width,
+            width: boundingBox.width * width,
             height: boundingBox.height * height
         )
 

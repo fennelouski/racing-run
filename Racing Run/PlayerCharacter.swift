@@ -30,19 +30,25 @@ class PlayerCharacter: SKNode {
 
         // Add the face on top of the body
         if let faceImage = CharacterImageManager.shared.loadCharacterFace() {
-            let texture = SKTexture(image: faceImage)
-            faceNode = SKSpriteNode(texture: texture)
-            faceNode.size = CGSize(width: 50, height: 50)
-            faceNode.position = CGPoint(x: 0, y: 35) // Position at the top of the body
-            faceNode.name = "face"
+            // Use SKCropNode to make the face circular
+            let cropNode = SKCropNode()
+            cropNode.position = CGPoint(x: 0, y: 35) // Position at the top of the body
+            cropNode.name = "faceCrop"
 
-            // Make the face circular
+            // Create circular mask
             let circlePath = CGPath(ellipseIn: CGRect(x: -25, y: -25, width: 50, height: 50), transform: nil)
             let maskNode = SKShapeNode(path: circlePath)
             maskNode.fillColor = .white
-            faceNode.mask = maskNode
+            cropNode.maskNode = maskNode
 
-            bodyNode.addChild(faceNode)
+            // Create the face sprite
+            let texture = SKTexture(image: faceImage)
+            faceNode = SKSpriteNode(texture: texture)
+            faceNode.size = CGSize(width: 50, height: 50)
+            faceNode.name = "face"
+
+            cropNode.addChild(faceNode)
+            bodyNode.addChild(cropNode)
         }
 
         addChild(bodyNode)
