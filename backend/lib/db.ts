@@ -1,6 +1,22 @@
-import { sql } from '@vercel/postgres';
+import { Pool, type QueryResult, type QueryResultRow } from 'pg';
 
-// Database schema will be created via Vercel Postgres
+// Backed by Prisma Postgres (standard TCP), not Neon, so @vercel/postgres
+// won't work here; this template tag keeps its call-site API ({ rows }).
+// ponytail: max 1 connection per serverless instance; raise if throughput matters
+const pool = new Pool({ connectionString: process.env.POSTGRES_URL, max: 1 });
+
+export function sql<T extends QueryResultRow = QueryResultRow>(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): Promise<QueryResult<T>> {
+  const text = strings.reduce(
+    (acc, s, i) => acc + s + (i < values.length ? `$${i + 1}` : ''),
+    ''
+  );
+  return pool.query<T>(text, values as any[]);
+}
+
+// Database schema will be created via Prisma Postgres
 // Tables: users, characters, scores, content
 
 export interface User {
@@ -103,5 +119,3 @@ export async function initDB() {
     throw error;
   }
 }
-
-export { sql };

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       .toBuffer();
 
     // Return processed image
-    return new NextResponse(processedImage, {
+    return new NextResponse(new Uint8Array(processedImage), {
       headers: {
         'Content-Type': 'image/png',
         'Content-Length': processedImage.length.toString(),
